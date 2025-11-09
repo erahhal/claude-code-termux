@@ -5,7 +5,7 @@
 ## The Problem
 
 Anthropic's Claude Code is powerful for developers, but it's officially only available for Desktop (macOS/Windows) and Web. **Mobile developers are excluded.**
-
+ 
 Users want to:
 - Develop on their phones/tablets
 - Use Claude Code without a laptop
