@@ -84,5 +84,5 @@ htmlcov/
 *~
 
 # Private user data
-test-results/
+# test-results/ - INCLUDED (contains important test metrics & benchmarks)
 .history
