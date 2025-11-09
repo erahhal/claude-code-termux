@@ -1,0 +1,88 @@
+# Environment Variables
+.env
+.env.local
+.env.*.local
+.env.backup
+
+# API Keys (CRITICAL - NEVER commit these)
+.env.keys
+secrets.json
+api-keys.json
+
+# SSH Keys (CRITICAL - NEVER commit these)
+.ssh/
+*.pem
+*.key
+
+# Node dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# Rust
+target/
+Cargo.lock
+**/*.rs.bk
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.project
+.classpath
+
+# OS
+.trash/
+Thumbs.db
+.AppleDouble
+
+# Temporary files
+*.tmp
+*.temp
+/tmp/
+/temp/
+
+# Build outputs
+dist/
+build/
+*.o
+*.a
+*.so
+*.dylib
+
+# Logs
+*.log
+logs/
+
+# Test coverage
+coverage/
+.coverage
+htmlcov/
+
+# Performance profiling
+*.prof
+
+# Backups
+*.backup
+*.bak
+*~
+
+# Private user data
+test-results/
+.history
