@@ -49,6 +49,18 @@ bash scripts/verify.sh
 claude-code --help
 ```
 
+## 📱 Proof of Concept
+
+Claude Code running **natively on Android/Termux** - Not theoretical, but actually working:
+
+![Claude Code on Android - Terminal Running](screenshots/claude-code-android-1.jpg)
+
+![Claude Code Version Info](screenshots/claude-code-android-2.jpg)
+
+![Termux Environment Verification](screenshots/claude-code-android-3.jpg)
+
+**Live demonstration** showing Claude Code (v2.0.22) with Claude Haiku 4.5 AI integration running in Termux environment on actual Android hardware. These aren't mockups - this is daily-driver tooling working perfectly on mobile.
+
 **For detailed step-by-step instructions**, see [SETUP.md](./SETUP.md)
 
 ## What Works ✅

@@ -80,7 +80,7 @@ GitHub: @eduterre | LinkedIn: linkedin.com/in/eduard-terre
 Email: terre.eduard@hotmail.com
 Location: Offenburg, Germany"
 
-gh issue comment anthropics/claude-code#9435 --body "$COMMENT_9435"
+gh issue comment 9435 --repo anthropics/claude-code --body "$COMMENT_9435"
 echo "✅ Comment zu Issue #9435 gepostet!"
 echo ""
 
@@ -136,7 +136,7 @@ Best,
 Eduard Terre (@eduterre)
 github.com/eduterre/claude-code-termux"
 
-gh issue comment anthropics/claude-code#2248 --body "$COMMENT_2248"
+gh issue comment 2248 --repo anthropics/claude-code --body "$COMMENT_2248"
 echo "✅ Comment zu Issue #2248 gepostet!"
 echo ""
 
