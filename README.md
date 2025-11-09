@@ -2,11 +2,6 @@
 
 **Make Claude Code work flawlessly on your Android device using Termux and PRoot.**
 
-> 🎯 **Status**: ✅ Fully tested and working | 📱 Real-world usage on ARM64 | ⚠️ Known limitations documented
->
-> **Created by**: Eduard Terre | Offenburg, Germany
-> **GitHub**: [@eduterre](https://github.com/eduterre) | **Email**: terre.eduard@hotmail.com
-
 ## The Problem
 
 Anthropic's Claude Code is powerful for developers, but it's officially only available for Desktop (macOS/Windows) and Web. **Mobile developers are excluded.**
