@@ -8,6 +8,56 @@ This document honestly lists what **doesn't work** on Claude Code for Android/Te
 
 ## Critical Issues
 
+### 0. `Error: claude native binary not installed` on versions ≥ 2.1.113
+
+**Severity**: 🔴 **HIGH** — blocks first launch
+**Status**: Worked around by pinning to `2.1.112`
+
+**Problem**:
+Starting with `@anthropic-ai/claude-code@2.1.113`, the npm package stopped
+shipping a JavaScript implementation and instead became a thin wrapper around a
+Bun-compiled native binary, delivered via per-platform optional dependencies
+(`@anthropic-ai/claude-code-linux-arm64`, `-linux-arm64-musl`, etc.).
+
+Termux's Node correctly reports `process.platform === 'android'`, so the wrapper's
+postinstall hook (`install.cjs`) tries to fetch
+`@anthropic-ai/claude-code-linux-arm64-android` — **a package Anthropic does not
+publish**. The hook fails silently and leaves a stub `bin/claude.exe` that, when
+invoked, prints:
+
+```
+Error: claude native binary not installed.
+Either postinstall did not run (--ignore-scripts, some pnpm configs)
+or the platform-native optional dependency was not downloaded (--omit=optional).
+```
+
+The `linux-arm64` (glibc) binary technically exists, but Termux ships bionic
+libc — the binary's interpreter (`/lib/ld-linux-aarch64.so.1`) is not present,
+and even after installing the Termux `glibc-runner` + `glibc` packages and
+patching the binary with `grun -c`, the dynamic loader still fails on the
+glibc shim's `libc.so` linker script.
+
+**Workaround** (used by this installer):
+- Pin to `@anthropic-ai/claude-code@2.1.112`, the last JS-only release.
+- Write `{ "env": { "DISABLE_AUTOUPDATER": "1" } }` to `~/.claude/settings.json`
+  so Claude Code doesn't silently auto-upgrade past `2.1.112` and re-break.
+
+If `claude` ever errors with the message above, run:
+
+```bash
+npm uninstall -g @anthropic-ai/claude-code
+npm install -g @anthropic-ai/claude-code@2.1.112
+```
+
+and confirm `~/.claude/settings.json` still has `DISABLE_AUTOUPDATER=1`.
+
+Getting newer versions running on Termux would require either Anthropic
+publishing an Android-targeted binary, a working glibc-runner / proot-distro
+launcher wrapper, or a community Termux build of the same Bun bundle. See the
+repo's discussions / issues for ongoing investigation.
+
+---
+
 ### 1. Custom Slash Commands Disabled
 
 **Severity**: 🔴 **HIGH** - Limits extensibility

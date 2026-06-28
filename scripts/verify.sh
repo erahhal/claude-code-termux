@@ -117,8 +117,8 @@ test_component "pip" "pip --version"
 
 echo -ne "Checking Rust... "
 if command -v rustc > /dev/null 2>&1; then
-  local version=$(rustc --version)
-  echo -e "${GREEN}✓ PASS${NC} ($version)"
+  rust_version=$(rustc --version)
+  echo -e "${GREEN}✓ PASS${NC} ($rust_version)"
   ((PASSED++))
 else
   echo -e "${YELLOW}! OPTIONAL${NC} (Rust not installed)"
@@ -135,23 +135,32 @@ echo ""
 echo -e "${BLUE}[Claude Code Installation]${NC}"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-echo -ne "Checking claude-code command... "
-if command -v claude-code > /dev/null 2>&1; then
-  local version=$(claude-code --version 2>&1 | head -1)
-  echo -e "${GREEN}✓ PASS${NC} ($version)"
+echo -ne "Checking claude command... "
+if command -v claude > /dev/null 2>&1; then
+  claude_version=$(claude --version 2>&1 | head -1)
+  echo -e "${GREEN}✓ PASS${NC} ($claude_version)"
   ((PASSED++))
 else
-  echo -e "${RED}✗ FAIL${NC} (claude-code not found in PATH)"
+  echo -e "${RED}✗ FAIL${NC} (claude not found in PATH)"
   ((FAILED++))
 fi
 
-echo -ne "Checking claude-code help... "
-if claude-code --help > /dev/null 2>&1; then
+echo -ne "Checking claude help... "
+if claude --help > /dev/null 2>&1; then
   echo -e "${GREEN}✓ PASS${NC}"
   ((PASSED++))
 else
-  echo -e "${RED}✗ FAIL${NC} (claude-code --help failed)"
+  echo -e "${RED}✗ FAIL${NC} (claude --help failed)"
   ((FAILED++))
+fi
+
+echo -ne "Checking claude auto-updater disabled... "
+if [ -f "$HOME/.claude/settings.json" ] && grep -q '"DISABLE_AUTOUPDATER"' "$HOME/.claude/settings.json" 2>/dev/null; then
+  echo -e "${GREEN}✓ PASS${NC}"
+  ((PASSED++))
+else
+  echo -e "${YELLOW}! WARNING${NC} (DISABLE_AUTOUPDATER not set in ~/.claude/settings.json — claude may auto-upgrade past 2.1.112 and break)"
+  ((WARNINGS++))
 fi
 
 # ============================================================================
@@ -164,7 +173,7 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 
 echo -ne "Checking ANTHROPIC_API_KEY... "
 if [ -n "$ANTHROPIC_API_KEY" ]; then
-  local key_prefix="${ANTHROPIC_API_KEY:0:7}"
+  key_prefix="${ANTHROPIC_API_KEY:0:7}"
   echo -e "${GREEN}✓ PASS${NC} (Set to: ${key_prefix}...)"
   ((PASSED++))
 else
@@ -174,7 +183,7 @@ fi
 
 echo -ne "Checking OPENAI_API_KEY... "
 if [ -n "$OPENAI_API_KEY" ]; then
-  local key_prefix="${OPENAI_API_KEY:0:7}"
+  key_prefix="${OPENAI_API_KEY:0:7}"
   echo -e "${GREEN}✓ PASS${NC} (Set to: ${key_prefix}...)"
   ((PASSED++))
 else
@@ -211,7 +220,7 @@ echo -e "${BLUE}[Git Configuration]${NC}"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 echo -ne "Git user.name... "
-local git_user=$(git config --global user.name 2>/dev/null)
+git_user=$(git config --global user.name 2>/dev/null)
 if [ -n "$git_user" ]; then
   echo -e "${GREEN}✓ PASS${NC} ($git_user)"
   ((PASSED++))
@@ -221,7 +230,7 @@ else
 fi
 
 echo -ne "Git user.email... "
-local git_email=$(git config --global user.email 2>/dev/null)
+git_email=$(git config --global user.email 2>/dev/null)
 if [ -n "$git_email" ]; then
   echo -e "${GREEN}✓ PASS${NC} ($git_email)"
   ((PASSED++))
@@ -291,8 +300,8 @@ if [ $FAILED -eq 0 ]; then
   echo -e "${GREEN}✓ Verification successful!${NC}"
   echo ""
   echo "You can now use Claude Code:"
-  echo "  claude-code --help"
-  echo "  claude-code 'your task here'"
+  echo "  claude --help"
+  echo "  claude 'your task here'"
   echo ""
   exit 0
 else

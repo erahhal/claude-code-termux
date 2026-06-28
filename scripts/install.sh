@@ -125,19 +125,61 @@ log_success "Directories created"
 # Step 5: Install Claude Code
 # ============================================================================
 
-log_step "Installing Claude Code..."
+# Pin to 2.1.112 — the last JS-only release. Versions 2.1.113+ ship a Bun-compiled
+# native binary that requires glibc; the postinstall hook fails on Termux because
+# Anthropic does not publish an `@anthropic-ai/claude-code-linux-arm64-android`
+# package, leaving a stub that errors out with "claude native binary not installed".
+CLAUDE_CODE_VERSION="2.1.112"
 
-if ! command -v claude-code &> /dev/null; then
+log_step "Installing Claude Code (pinned to ${CLAUDE_CODE_VERSION})..."
+
+if ! command -v claude &> /dev/null; then
   echo "Attempting to install via npm..."
-  if npm install -g @anthropic-ai/claude-code > /dev/null 2>&1; then
-    log_success "Claude Code installed: $(claude-code --version)"
+  if npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}" > /dev/null 2>&1; then
+    log_success "Claude Code installed: $(claude --version)"
   else
     log_error "Failed to install Claude Code via npm"
     echo "Try installing manually:"
-    echo "  npm install -g @anthropic-ai/claude-code"
+    echo "  npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}"
   fi
 else
-  log_success "Claude Code already installed: $(claude-code --version)"
+  log_success "Claude Code already installed: $(claude --version)"
+fi
+
+# ============================================================================
+# Step 5b: Disable Auto-Updater
+# ============================================================================
+#
+# Claude Code auto-updates to the latest version on launch by default. On Termux
+# that would silently upgrade past 2.1.112 to a version that can't run here.
+# DISABLE_AUTOUPDATER=1 keeps us pinned.
+
+log_step "Disabling Claude Code auto-updater..."
+
+CLAUDE_SETTINGS_DIR="$HOME/.claude"
+CLAUDE_SETTINGS_FILE="$CLAUDE_SETTINGS_DIR/settings.json"
+mkdir -p "$CLAUDE_SETTINGS_DIR"
+
+if [ -f "$CLAUDE_SETTINGS_FILE" ]; then
+  # Merge into existing settings if jq is available; otherwise just warn.
+  if command -v jq &> /dev/null; then
+    tmp=$(mktemp)
+    jq '.env = (.env // {}) + {"DISABLE_AUTOUPDATER": "1"}' "$CLAUDE_SETTINGS_FILE" > "$tmp" \
+      && mv "$tmp" "$CLAUDE_SETTINGS_FILE"
+    log_success "Merged DISABLE_AUTOUPDATER into $CLAUDE_SETTINGS_FILE"
+  else
+    log_error "$CLAUDE_SETTINGS_FILE exists and jq is not installed — please add manually:"
+    echo '  { "env": { "DISABLE_AUTOUPDATER": "1" } }'
+  fi
+else
+  cat > "$CLAUDE_SETTINGS_FILE" << 'EOF'
+{
+  "env": {
+    "DISABLE_AUTOUPDATER": "1"
+  }
+}
+EOF
+  log_success "Created $CLAUDE_SETTINGS_FILE with auto-updater disabled"
 fi
 
 # ============================================================================
@@ -158,8 +200,8 @@ if ! grep -q "# Claude Code on Android" "$HOME/.bashrc"; then
 
 # Claude Code on Android - Custom Configuration
 # Useful aliases
-alias cl="claude-code"
-alias cls="claude-code stats"
+alias cl="claude"
+alias cls="claude stats"
 
 # Display useful info
 echo "🚀 Claude Code on Android/Termux Ready"
@@ -255,8 +297,8 @@ echo "Next steps:"
 echo "  1. Reload your shell: source ~/.bashrc"
 echo "  2. Verify installation: bash scripts/verify.sh"
 echo "  3. Start using Claude Code:"
-echo "     claude-code --help"
-echo "     claude-code 'your task here'"
+echo "     claude --help"
+echo "     claude 'your task here'"
 echo ""
 echo "For detailed documentation, see:"
 echo "  • README.md - Project overview"

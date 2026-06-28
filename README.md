@@ -36,7 +36,7 @@ This repository provides **complete, tested instructions** to run Claude Code na
 # Available at: https://f-droid.org/packages/com.termux/
 
 # 2. Clone this repository
-git clone https://github.com/eduterre/claude-code-termux.git
+git clone https://github.com/erahhal/claude-code-termux.git
 cd claude-code-termux
 
 # 3. Run the automated setup
@@ -46,8 +46,27 @@ bash scripts/install.sh
 bash scripts/verify.sh
 
 # 5. Use Claude Code!
-claude-code --help
+claude --help
 ```
+
+## Version Pinning (Important)
+
+This installer pins `@anthropic-ai/claude-code` to **`2.1.112`** — the last
+JS-only release. Starting with `2.1.113`, the package ships a Bun-compiled
+native binary delivered via per-platform optional dependencies. Anthropic does
+not publish an `@anthropic-ai/claude-code-linux-arm64-android` package, so the
+postinstall hook fails on Termux and leaves a stub that errors with:
+
+```
+Error: claude native binary not installed.
+```
+
+The install script also writes `{ "env": { "DISABLE_AUTOUPDATER": "1" } }` to
+`~/.claude/settings.json` so Claude Code doesn't silently auto-upgrade past
+`2.1.112` and break itself on next launch.
+
+See [KNOWN_ISSUES.md](./KNOWN_ISSUES.md) for the longer story and what would be
+required to run newer versions (glibc-runner, proot-distro, etc.).
 
 ## 📱 Proof of Concept
 
@@ -232,11 +251,9 @@ Thank you,
 
 ---
 
-**Made with ❤️ by [Eduard Terre](https://github.com/eduterre), for developers everywhere.**
+**Fork maintained by [@erahhal](https://github.com/erahhal).** Originally created
+by [Eduard Terre](https://github.com/eduterre) — this fork adds the `2.1.112`
+version pin and the `DISABLE_AUTOUPDATER` settings file required for the
+installer to keep working on Termux.
 
-**Connect**:
-- 🐙 GitHub: [@eduterre](https://github.com/eduterre)
-- 💼 LinkedIn: [Eduard Terre](https://linkedin.com/in/eduard-terre)
-- 📧 Email: terre.eduard@hotmail.com
-
-Last updated: November 2025
+Last updated: 2026-06-28
